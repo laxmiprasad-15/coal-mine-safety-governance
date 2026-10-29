@@ -20,6 +20,8 @@ from app.api.equipment import router as equipment_router
 from app.api.reports import router as reports_router
 from app.api.audit import router as audit_router
 from app.api.dashboard import router as dashboard_router
+from app.api.contractors import router as contractors_router
+from app.api.inspections import router as inspections_router
 
 # Create Database tables
 Base.metadata.create_all(bind=engine)
@@ -59,6 +61,8 @@ app.include_router(workers_router, prefix=settings.API_V1_STR)
 app.include_router(equipment_router, prefix=settings.API_V1_STR)
 app.include_router(reports_router, prefix=settings.API_V1_STR)
 app.include_router(audit_router, prefix=settings.API_V1_STR)
+app.include_router(contractors_router, prefix=settings.API_V1_STR)
+app.include_router(inspections_router, prefix=settings.API_V1_STR)
 
 @app.on_event("startup")
 def on_startup():

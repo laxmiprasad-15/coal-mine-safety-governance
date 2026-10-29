@@ -107,3 +107,4 @@ class RealtimeMineStreamer:
             db.close()
 
 streamer = RealtimeMineStreamer()
+

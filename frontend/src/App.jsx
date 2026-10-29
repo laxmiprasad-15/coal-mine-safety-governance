@@ -14,6 +14,8 @@ import Reports from './pages/Reports'
 import AuditTrail from './pages/AuditTrail'
 import Settings from './pages/Settings'
 import Login from './pages/Login'
+import Contractors from './pages/Contractors'
+import MobileFieldApp from './pages/MobileFieldApp'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -34,6 +36,14 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route
+        path="/mobile"
+        element={
+          <ProtectedRoute>
+            <MobileFieldApp />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/"
         element={
           <ProtectedRoute>
@@ -49,6 +59,7 @@ export default function App() {
         <Route path="compliance-cases" element={<ComplianceCases />} />
         <Route path="actions" element={<CorrectiveActions />} />
         <Route path="workers" element={<Workers />} />
+        <Route path="contractors" element={<Contractors />} />
         <Route path="equipment" element={<Equipment />} />
         <Route path="reports" element={<Reports />} />
         <Route path="audit-trail" element={<AuditTrail />} />

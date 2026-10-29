@@ -385,3 +385,53 @@ class ReportResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# Contractor Management Schemas
+class ContractorResponse(BaseModel):
+    id: int
+    name: str
+    code: str
+    subsidiary: str
+    work_order_no: str
+    category: str
+    active_workers: int
+    compliance_score: float
+    pme_valid: bool
+    vtc_trained: bool
+    insurance_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+# Field Inspection & Mobile Reporting Schemas
+class FieldInspectionCreate(BaseModel):
+    zone_id: Optional[int] = 1
+    latitude: Optional[float] = 23.7957
+    longitude: Optional[float] = 86.4304
+    location_name: str
+    inspection_type: str = "Safety Observation"
+    hazard_level: str = "Medium"
+    observation_notes: str
+    corrective_recommendation: Optional[str] = None
+    photo_url: Optional[str] = None
+    is_offline_synced: Optional[bool] = False
+
+class FieldInspectionResponse(BaseModel):
+    id: int
+    inspector_id: Optional[int] = None
+    zone_id: Optional[int] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    location_name: str
+    inspection_type: str
+    hazard_level: str
+    observation_notes: str
+    corrective_recommendation: Optional[str] = None
+    photo_url: Optional[str] = None
+    is_offline_synced: bool
+    timestamp: datetime
+
+    class Config:
+        from_attributes = True

@@ -3,7 +3,8 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Map, HardHat, Activity, TrendingUp,
   FileCheck2, CheckSquare, Users, Wrench, FileText,
-  ShieldAlert, Settings, Bell, LogOut, RefreshCw, UserCheck, CheckCircle2, AlertTriangle, AlertCircle
+  ShieldAlert, Settings, Bell, LogOut, RefreshCw, UserCheck, CheckCircle2, AlertTriangle, AlertCircle,
+  Building2, Smartphone
 } from 'lucide-react';
 import { useAuth, DEMO_ACCOUNTS } from '../context/AuthContext';
 import { getNotificationsApi, markNotificationReadApi, markAllNotificationsReadApi, triggerSimulatorPulseApi } from '../services/api';
@@ -17,9 +18,11 @@ const navItems = [
   { name: 'Compliance Cases', path: '/compliance-cases', icon: FileCheck2 },
   { name: 'Corrective Actions', path: '/actions', icon: CheckSquare },
   { name: 'Workers', path: '/workers', icon: Users },
+  { name: 'Contractors', path: '/contractors', icon: Building2 },
   { name: 'Equipment', path: '/equipment', icon: Wrench },
   { name: 'Reports', path: '/reports', icon: FileText },
   { name: 'Audit Trail', path: '/audit-trail', icon: ShieldAlert },
+  { name: 'Mobile Field App', path: '/mobile', icon: Smartphone },
   { name: 'Settings', path: '/settings', icon: Settings },
 ];
 
@@ -135,6 +138,16 @@ const DashboardLayout = () => {
           </div>
 
           <div className="flex items-center space-x-3">
+            {/* Mobile App View Link */}
+            <button
+              onClick={() => navigate('/mobile')}
+              className="inline-flex items-center text-xs font-semibold px-2.5 py-1.5 rounded-md bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 transition-colors"
+              title="Launch Mobile App Interface for Field Inspections"
+            >
+              <Smartphone size={14} className="mr-1.5 text-indigo-600" />
+              Field Mobile App
+            </button>
+
             {/* Live Simulator Pulse */}
             <button
               onClick={handleSimulatePulse}

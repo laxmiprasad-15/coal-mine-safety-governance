@@ -327,3 +327,54 @@ class Report(Base):
 
     generator = relationship("User")
 
+class Contractor(Base):
+    __tablename__ = "contractors"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(150), nullable=False)
+    code = Column(String(30), unique=True, index=True)
+    subsidiary = Column(String(50), default="BCCL")  # BCCL, ECL, CCL, WCL, SECL, MCL, NCL, SCCL
+    work_order_no = Column(String(60), nullable=False)
+    category = Column(String(60), default="OB Removal & Haulage")
+    active_workers = Column(Integer, default=25)
+    compliance_score = Column(Float, default=88.5)
+    pme_valid = Column(Boolean, default=True)  # Periodic Medical Examination (Form O)
+    vtc_trained = Column(Boolean, default=True)  # Vocational Training Certificate
+    insurance_active = Column(Boolean, default=True)
+    valid_till = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+class FieldInspection(Base):
+    __tablename__ = "field_inspections"
+    id = Column(Integer, primary_key=True, index=True)
+    inspector_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    zone_id = Column(Integer, ForeignKey("zones.id"), nullable=True)
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
+    location_name = Column(String(150), nullable=False)
+    inspection_type = Column(String(60), default="Safety Observation")  # Statutory CMR, PPE Check, Dust/Ventilation, Blasting Safety
+    hazard_level = Column(String(20), default="Medium")  # Low, Medium, High, Critical
+    observation_notes = Column(Text, nullable=False)
+    corrective_recommendation = Column(Text, nullable=True)
+    photo_url = Column(String(255), nullable=True)
+    is_offline_synced = Column(Boolean, default=False)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow, index=True)
+
+    inspector = relationship("User")
+    zone = relationship("Zone")
+
+class StatutoryPermit(Base):
+    __tablename__ = "statutory_permits"
+    id = Column(Integer, primary_key=True, index=True)
+    permit_no = Column(String(50), unique=True, index=True)
+    permit_type = Column(String(80), nullable=False)  # Hot Work, Confined Space, Heavy Blasting, Roof Bolting
+    zone_id = Column(Integer, ForeignKey("zones.id"), nullable=True)
+    issuer_name = Column(String(100), nullable=False)
+    authorized_supervisor = Column(String(100), nullable=False)
+    valid_from = Column(DateTime, nullable=False)
+    valid_to = Column(DateTime, nullable=False)
+    safety_precautions = Column(Text, nullable=True)
+    ocr_extracted_text = Column(Text, nullable=True)
+    status = Column(String(20), default="Active")  # Active, Expired, Revoked
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
