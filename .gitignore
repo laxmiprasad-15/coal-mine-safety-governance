@@ -1,0 +1,114 @@
+# ============================================================
+# Coal Mine Safety Governance System — .gitignore
+# ============================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.env
+
+# Environment files (keep .env.example)
+backend/.env
+!backend/.env.example
+
+# Database (don't commit SQLite data file)
+*.db
+*.sqlite
+*.sqlite3
+
+# ML model files (large binary files)
+backend/models/*.joblib
+backend/models/*.pkl
+backend/models/*.pt
+backend/models/*.pth
+# But keep the directory
+!backend/models/.gitkeep
+
+# YOLOv8 downloaded weights
+*.pt
+!backend/ml/training/*.py
+
+# Uploaded files (user data)
+backend/uploads/ppe/*.jpg
+backend/uploads/ppe/*.png
+backend/uploads/ppe/*.jpeg
+backend/uploads/ppe/*.mp4
+backend/uploads/sensors/*.csv
+backend/uploads/reports/*.pdf
+backend/uploads/reports/*.xlsx
+# Keep demo assets
+!backend/uploads/ppe/demo_*.jpg
+!backend/uploads/sensor_sample_upload.csv
+
+# Node.js
+node_modules/
+frontend/node_modules/
+
+# Frontend build output
+frontend/dist/
+frontend/.vite/
+
+# Vite cache
+.vite/
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+
+# IDE files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+.project
+.classpath
+
+# Tools directory (portable Node.js - large)
+tools/node/
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Test output
+.coverage
+htmlcov/
+.pytest_cache/
+*.cover
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Report files generated during runtime
+backend/uploads/reports/daily_*.pdf
+backend/uploads/reports/weekly_*.pdf
+backend/uploads/reports/audit_*.pdf
+
