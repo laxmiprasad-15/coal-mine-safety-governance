@@ -56,3 +56,4 @@ python -m ml.evaluation.evaluate_models
 - **Weighted F1-Score:** $\ge 0.90$ (Achieved: **0.9177**)
 - **YOLOv8 Detection Latency:** $\le 100\text{ms}$ on CPU, $\le 30\text{ms}$ on GPU.
 - **Isolation Forest False Alarm Rate:** $\le 5.0\%$ on clean baseline distributions.
+

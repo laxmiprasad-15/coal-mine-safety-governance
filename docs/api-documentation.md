@@ -166,3 +166,4 @@ Streams the compiled document file to client.
 
 ### `GET /audit/logs`
 Returns chronological, immutable event logs with SHA-256 integrity tokens.
+
