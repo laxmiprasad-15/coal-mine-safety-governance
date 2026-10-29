@@ -60,6 +60,8 @@ export const uploadSensorCsvApi = (formData) => api.post('/sensors/upload-csv', 
   headers: { 'Content-Type': 'multipart/form-data' }
 });
 export const triggerSimulatorPulseApi = () => api.post('/sensors/simulate-live-pulse');
+export const toggleStreamerApi = (active, interval = 4.0) => api.post(`/sensors/streamer/toggle?active=${active}&interval_seconds=${interval}`);
+export const getStreamerStatusApi = () => api.get('/sensors/streamer/status');
 
 // Risk & Explainable AI
 export const predictZoneRiskApi = (zoneId, forecastShift) => api.post('/risk/predict', { zone_id: zoneId, forecast_shift: forecastShift });

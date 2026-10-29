@@ -10,6 +10,7 @@ from app.models.models import Sensor, SensorReading, Zone, Anomaly, ComplianceCa
 from app.schemas.schemas import SensorResponse, SensorReadingResponse, SensorReadingCreate
 from app.ml.anomaly_detector import anomaly_detector
 from app.services.audit_service import create_audit_log
+from app.services.realtime_streamer import streamer
 
 router = APIRouter(prefix="/sensors", tags=["Sensors & Environmental Telemetry"])
 
@@ -145,22 +146,36 @@ async def upload_sensors_csv(file: UploadFile = File(...), db: Session = Depends
         except Exception:
             ts = datetime.utcnow()
 
-        if "methane_pct" in row:
-            ch4_sensor = db.query(Sensor).filter(Sensor.zone_id == zone.id, Sensor.type == "CH4").first()
-            if ch4_sensor:
-                val = float(row["methane_pct"])
-                eval_res = anomaly_detector.evaluate_reading("CH4", val)
-                db.add(SensorReading(
-                    sensor_id=ch4_sensor.id,
-                    zone_id=zone.id,
-                    value=val,
-                    is_anomaly=eval_res["is_anomaly"],
-                    anomaly_score=eval_res["anomaly_score"],
-                    timestamp=ts
-                ))
-                count += 1
-                if eval_res["is_anomaly"]:
-                    anomalies_detected += 1
+        type_mapping = [
+            ("methane_pct", "CH4"),
+            ("co_ppm", "CO"),
+            ("temperature_c", "TEMP"),
+            ("humidity_pct", "HUMIDITY"),
+            ("oxygen_pct", "O2"),
+            ("airflow_ms", "AIRFLOW"),
+            ("vibration_mms", "VIBRATION"),
+        ]
+
+        for col, stype in type_mapping:
+            if col in row and row[col] != "":
+                sensor_obj = db.query(Sensor).filter(Sensor.zone_id == zone.id, Sensor.type == stype).first()
+                if sensor_obj:
+                    try:
+                        val = float(row[col])
+                        eval_res = anomaly_detector.evaluate_reading(stype, val)
+                        db.add(SensorReading(
+                            sensor_id=sensor_obj.id,
+                            zone_id=zone.id,
+                            value=val,
+                            is_anomaly=eval_res["is_anomaly"],
+                            anomaly_score=eval_res["anomaly_score"],
+                            timestamp=ts
+                        ))
+                        count += 1
+                        if eval_res["is_anomaly"]:
+                            anomalies_detected += 1
+                    except (ValueError, TypeError):
+                        pass
 
     db.commit()
     return {
@@ -195,3 +210,24 @@ def trigger_simulated_pulse(db: Session = Depends(get_db)):
 
     db.commit()
     return {"message": f"Generated simulated telemetry pulse for {created} sensors."}
+
+@router.post("/streamer/toggle")
+def toggle_realtime_streamer(active: bool, interval_seconds: float = 4.0):
+    if active:
+        streamer.start(interval=interval_seconds)
+    else:
+        streamer.stop()
+    return {
+        "is_running": streamer.is_running,
+        "interval_seconds": streamer._interval,
+        "total_pulses": streamer.total_pulses
+    }
+
+@router.get("/streamer/status")
+def get_streamer_status():
+    return {
+        "is_running": streamer.is_running,
+        "interval_seconds": streamer._interval,
+        "total_pulses": streamer.total_pulses
+    }
+

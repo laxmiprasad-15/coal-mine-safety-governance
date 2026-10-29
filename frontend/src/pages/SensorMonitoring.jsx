@@ -5,7 +5,8 @@ import {
 } from 'lucide-react';
 import {
   getSensorsApi, getSensorHistoryApi, postSensorReadingApi,
-  uploadSensorCsvApi, triggerSimulatorPulseApi, getZonesApi
+  uploadSensorCsvApi, triggerSimulatorPulseApi, getZonesApi,
+  toggleStreamerApi, getStreamerStatusApi
 } from '../services/api';
 import Modal from '../components/Modal';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
@@ -18,6 +19,41 @@ const SensorMonitoring = () => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+
+  useEffect(() => {
+    getStreamerStatusApi().then(res => setIsStreaming(res.data.is_running)).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    let interval = null;
+    if (isStreaming) {
+      interval = setInterval(async () => {
+        await loadSensors();
+        if (selectedSensor) {
+          getSensorHistoryApi(selectedSensor.id).then(res => {
+            const chartPoints = res.data.map(r => ({
+              time: new Date(r.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+              value: r.value,
+              is_anomaly: r.is_anomaly
+            }));
+            setHistory(chartPoints);
+          }).catch(() => {});
+        }
+      }, 3500);
+    }
+    return () => { if (interval) clearInterval(interval); };
+  }, [isStreaming, selectedSensor?.id]);
+
+  const handleToggleStream = async () => {
+    try {
+      const nextState = !isStreaming;
+      const res = await toggleStreamerApi(nextState, 3.5);
+      setIsStreaming(res.data.is_running);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   // Manual entry modal
   const [manualModalOpen, setManualModalOpen] = useState(false);
@@ -170,12 +206,26 @@ const SensorMonitoring = () => {
           </select>
         </div>
 
-        <button
-          onClick={handlePulse}
-          className="text-xs text-blue-600 hover:text-blue-800 font-medium inline-flex items-center"
-        >
-          <RefreshCw size={13} className="mr-1.5" /> Trigger Simulated Telemetry Stream
-        </button>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={handleToggleStream}
+            className={`inline-flex items-center text-xs font-medium px-3 py-1.5 rounded-full border transition-all ${
+              isStreaming
+                ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
+                : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <span className={`w-2 h-2 rounded-full mr-2 ${isStreaming ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`}></span>
+            {isStreaming ? 'Live Stream Active (Streaming 3.5s)' : 'Start Real-Time Live Stream'}
+          </button>
+
+          <button
+            onClick={handlePulse}
+            className="text-xs text-blue-600 hover:text-blue-800 font-medium inline-flex items-center"
+          >
+            <RefreshCw size={13} className="mr-1.5" /> Single Pulse
+          </button>
+        </div>
       </div>
 
       {/* Main Grid: Sensor Cards on Left, Selected Sensor Trend on Right */}
